@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>Hello APP</title>
+    <style>
+        html,body{
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #canvas-wrap{
+            padding: 10px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+        #canvas{
+            height:100%;
+            width:100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="canvas-wrap">
+        <canvas id="canvas"></canvas>
+    </div>
+</body>
+<script type="text/javascript" src="../../script/Chart.min.js"></script>
+
+<script type="text/javascript">
+    var myChart, myConfig = {};
+    apiready = function() {
+        api.sendEvent({name: 'ready_line_basic_frm'})
+        api.addEventListener({
+            name: 'chartChange'
+        }, function(ret, err) {
+            if(!myChart){
+                myConfig = ret.value;
+                myChart = new Chart('canvas', myConfig)
+            }else{
+                updateData(ret.value)
+            }
+        });
+    };
+
+    function updateData(type){
+        if(type == 'addData'){
+            var MONTHS = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二'];
+            if (myConfig.data.datasets.length > 0) {
+				var month = MONTHS[myConfig.data.labels.length % MONTHS.length];
+				myConfig.data.labels.push(month);
+				myConfig.data.datasets.forEach(function(dataset) {
+					dataset.data.push(Math.floor(-100+Math.random()*(200)));
+				});
+				myChart.update();
+			}
+        }else if(type == 'removeData'){
+            myConfig.data.labels.splice(-1, 1); // remove the label first
+			myConfig.data.datasets.forEach(function(dataset) {
+				dataset.data.pop();
+			});
+			myChart.update();
+        }
+    }
+
+</script>
+
+</html>
