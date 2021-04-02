@@ -58,7 +58,7 @@ function initCanvas(canvas, config, context) {
 	// returns null or '' if no explicit value has been set to the canvas attribute.
 	
 
-	if( (typeof(api) == 'object' && !!api.platform)){
+	if( typeof(wx) == 'object' || (typeof(api) == 'object' && !!api.platform)){
 		var renderHeight = context['height'];
 		var renderWidth = context['width'];
 	}else{
@@ -79,7 +79,7 @@ function initCanvas(canvas, config, context) {
 		}
 	};
 
-	if( (typeof(api) == 'object' && !!api.platform)){
+	if(  typeof(wx) == 'object' || (typeof(api) == 'object' && !!api.platform)){
 		canvas.width = parseFloat(renderWidth)
 		canvas.height = parseFloat(renderHeight)
 		return canvas
@@ -259,7 +259,7 @@ function unwatchForRender(node) {
 }
 
 function addResizeListener(node, listener, chart) {
-	if(typeof(api) == 'object' && !!api.platform){
+	if( typeof(wx) == 'object' || typeof(api) == 'object' && !!api.platform){
 		return
 	}
 	var expando = node[EXPANDO_KEY] || (node[EXPANDO_KEY] = {});
@@ -336,7 +336,7 @@ module.exports = {
 	 * to be manually imported to make this library compatible with any CSP.
 	 * See https://github.com/chartjs/Chart.js/issues/5208
 	 */
-	disableCSSInjection: false,
+	disableCSSInjection: (typeof wx == 'object' && !!wx.createSelectorQuery),
 
 	/**
 	 * This property holds whether this platform is enabled for the current environment.
@@ -428,6 +428,9 @@ module.exports = {
 	},
 
 	addEventListener: function(chart, type, listener) {
+		if(typeof wx == 'object' && typeof(api) != 'object'){
+			return
+		}
 		var canvas = (typeof(api) == 'object' && api.platform == 'mp')? chart.k_canvas : chart.canvas;
 		if (type === 'resize') {
 			// Note: the resize event is not supported on all browsers.
@@ -465,6 +468,9 @@ module.exports = {
 	},
 
 	removeEventListener: function(chart, type, listener) {
+		if(typeof wx == 'object'){
+			return
+		}
 		var canvas = (typeof(api) == 'object' && api.platform == 'mp')? chart.k_canvas : chart.canvas;
 		if (type === 'resize') {
 			// Note: the resize event is not supported on all browsers.

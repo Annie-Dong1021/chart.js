@@ -5,7 +5,7 @@ var basic = require('./platform.basic');
 var dom = require('./platform.dom');
 
 // @TODO Make possible to select another platform at build time.
-var implementation = dom._enabled ? dom : basic;
+var implementation = dom;
 
 /**
  * @namespace Chart.platform

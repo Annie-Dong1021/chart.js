@@ -14,3 +14,5 @@ bower.json
 *.log
 *.swp
 *.stackdump
+/avm-demo/.bin
+/avm-demo/out-mp

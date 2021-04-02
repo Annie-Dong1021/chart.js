@@ -16,45 +16,27 @@ const banner = `/*!
  */`;
 
 module.exports = [
-	// UMD builds (excluding moment)
-	// dist/Chart.min.js
-	// dist/Chart.js
+	// {
+	// 	input: input,
+	// 	plugins: [
+	// 		resolve(),
+	// 		commonjs(),
+	// 		stylesheet(),
+	// 	],
+	// 	output: {
+	// 		name: 'Chart',
+	// 		file: 'dist/Chart.js',
+	// 		banner: banner,
+	// 		format: 'iife',
+	// 		indent: false,
+	// 	},
+	// },
 	{
 		input: input,
 		plugins: [
 			resolve(),
 			commonjs(),
 			stylesheet({
-				extract: true
-			}),
-			// optional({
-			// 	include: ['moment']
-			// })
-		],
-		output: {
-			name: 'Chart',
-			file: 'dist/Chart.js',
-			banner: banner,
-			format: 'iife',// avm is esm || other is iife
-			indent: false,
-			// globals: {
-			// 	moment: 'moment'
-			// }	
-		},
-		// external: [
-		// 	'moment'
-		// ]
-	},
-	{
-		input: input,
-		plugins: [
-			resolve(),
-			commonjs(),
-			// optional({
-			// 	include: ['moment']
-			// }),
-			stylesheet({
-				extract: true,
 				minify: true
 			}),
 			terser({
@@ -68,18 +50,8 @@ module.exports = [
 			file: 'dist/Chart.min.js',
 			format: 'iife',
 			indent: false,
-			// globals: {
-			// 	moment: 'moment'
-			// }
 		},
-		// external: [
-		// 	'moment'
-		// ]
 	},
-
-	// UMD builds (including moment)
-	// dist/Chart.bundle.min.js
-	// dist/Chart.bundle.js
 	// {
 	// 	input: input,
 	// 	plugins: [
@@ -89,31 +61,31 @@ module.exports = [
 	// 	],
 	// 	output: {
 	// 		name: 'Chart',
-	// 		file: 'dist/Chart.bundle.js',
-	// 		banner: banner,
+	// 		file: 'dist/Chart.umd.js',
 	// 		format: 'umd',
+	// 		banner: banner,
 	// 		indent: false
 	// 	}
 	// },
-	// {
-	// 	input: input,
-	// 	plugins: [
-	// 		resolve(),
-	// 		commonjs(),
-	// 		stylesheet({
-	// 			minify: true
-	// 		}),
-	// 		terser({
-	// 			output: {
-	// 				preamble: banner
-	// 			}
-	// 		})
-	// 	],
-	// 	output: {
-	// 		name: 'Chart',
-	// 		file: 'dist/Chart.bundle.min.js',
-	// 		format: 'iife',
-	// 		indent: false
-	// 	}
-	// }
+	{
+		input: input,
+		plugins: [
+			resolve(),
+			commonjs(),
+			stylesheet({
+				minify: true
+			}),
+			terser({
+				output: {
+					preamble: banner
+				}
+			})
+		],
+		output: {
+			name: 'Chart',
+			file: 'dist/Chart.umd.min.js',
+			format: 'umd',
+			indent: false
+		}
+	}
 ];

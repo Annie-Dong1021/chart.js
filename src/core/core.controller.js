@@ -176,19 +176,17 @@ helpers.extend(Chart.prototype, /** @lends Chart */ {
 			if(api.platform == 'mp' && config.options && !config.options.devicePixelRatio){
 				config.options.devicePixelRatio = 3
 			}
-
+			initChart.bind(this)(item, config);
+		}else if(typeof wx == 'object' && wx.createSelectorQuery){
+			config.options.devicePixelRatio = wx.getSystemInfoSync().pixelRatio;
 			initChart.bind(this)(item, config);
 		}else{
 			init.bind(this)(item, config);
 		}
 
 		function initChart(id, config){
-			var canvas = document.getElementById(id);
-			if(!canvas){
-				console.error('element id is undefined')
-				return 
-			}
-			if(api.platform == 'mp'){
+			if(typeof(api)=='object' && api.platform == 'mp'){
+				var canvas = document.getElementById(id);
 				canvas.$$prepare().then((dom)=> {
 					window.$$getComputedStyle(dom, ['width','height']).then(res => {
 						var context = canvas.getContext('2d')
@@ -198,7 +196,19 @@ helpers.extend(Chart.prototype, /** @lends Chart */ {
 						init.bind(this)(context, config);
 					})
 				});
+			}else if(typeof wx == 'object' && wx.createSelectorQuery){
+				const query = wx.createSelectorQuery();
+				const canvasNode = query.select('#'+id);
+				canvasNode.fields({ node: true, size: true }).exec(res=>{
+					var canvas = res[0].node;
+        			var context = canvas.getContext('2d');
+        			context.width = res[0].width;
+					context.height = res[0].height;
+					context.k_canvas = canvasNode;
+					init.bind(this)(context, config);
+				})
 			}else{
+				var canvas = document.getElementById(id);
 				var style = window.getComputedStyle(canvas);
 				var context = canvas.getContext('2d');
 				context.width = style.width;
@@ -307,7 +317,7 @@ helpers.extend(Chart.prototype, /** @lends Chart */ {
 	},
 
 	resize: function(silent) {
-		if(typeof(api) == 'object' && !!api.platform){
+		if( typeof(wx) == 'object' || typeof(api) == 'object' && !!api.platform){
 			return
 		}
 		var me = this;
@@ -513,6 +523,12 @@ helpers.extend(Chart.prototype, /** @lends Chart */ {
 	},
 
 	update: function(config) {
+		if( typeof wx == 'object' && typeof config == 'undefined'){
+			this.tooltip._lastActive = []
+			this.tooltip._active = []
+			this.tooltip.update(true)
+			this.tooltip.pivot();
+		}
 		var me = this;
 		var i, ilen;
 
@@ -992,6 +1008,9 @@ helpers.extend(Chart.prototype, /** @lends Chart */ {
 	 * @private
 	 */
 	bindEvents: function() {
+		if(typeof wx == 'object' && wx.createSelectorQuery && typeof api == 'undefined'){
+			return
+		}
 		var me = this;
 		var listeners = me._listeners = {};
 		var listener = function() {
@@ -1045,6 +1064,23 @@ helpers.extend(Chart.prototype, /** @lends Chart */ {
 		if (mode === 'dataset') {
 			this.getDatasetMeta(elements[0]._datasetIndex).controller['_' + prefix + 'DatasetHoverStyle']();
 		}
+	},
+
+	touchHandler: function(e){
+		if(typeof wx == 'object' && wx.createSelectorQuery){
+			this.chart.k_canvas.touches = e.touches;
+			if(!this.chart.k_canvas.myBoundingClientRect){
+				this.chart.k_canvas.myBoundingClientRect = this.chart.k_canvas.boundingClientRect(rect=>{
+					this.canvas.boundingClientRect = rect;
+					this.eventHandler({touches:this.chart.k_canvas.touches, type:'click', chart:this});
+				})
+			}
+			this.chart.k_canvas.myBoundingClientRect.exec();
+		}
+	},
+
+	hideTooltip: function(e){
+		this.eventHandler({type:'mouseout'});
 	},
 
 	/**

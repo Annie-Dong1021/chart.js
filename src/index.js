@@ -153,27 +153,3 @@ Chart.helpers.each(
 
 module.exports = Chart;
 
-// module.exports = function(params){
-// 	var canvas = document.getElementById(params.id);
-// 	if(!canvas){
-// 		console.error('element id is undefined')
-// 		return 
-// 	}
-// 	if(typeof(api) == 'object' && api.platform == 'mp'){
-// 		canvas.$$prepare().then((dom)=> {
-// 			window.$$getComputedStyle(dom, ['width','height']).then(res => {
-// 				var context = canvas.getContext('2d')
-// 				context.width = res.width;
-// 				context.height = res.height;
-// 				context.k_canvas = canvas;
-// 				params.ready && params.ready(new Chart(context, params.options))
-// 			})
-// 		});
-// 	}else{
-// 		var style = window.getComputedStyle(canvas);
-// 		var context = canvas.getContext('2d');
-// 		context.width = style.width;
-// 		context.height = style.height;
-// 		params.ready && params.ready(new Chart(context, params.options))
-// 	}
-// };

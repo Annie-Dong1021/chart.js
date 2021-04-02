@@ -340,18 +340,13 @@ module.exports = function() {
 	};
 	// Request animation polyfill - https://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
 	helpers.requestAnimFrame = (function() {
-		if (typeof window === 'undefined') {
-			return function(callback) {
-				callback();
-			};
-		}
-		return window.requestAnimationFrame ||
+		return (typeof window == 'object' && (window.requestAnimationFrame ||
 			window.webkitRequestAnimationFrame ||
 			window.mozRequestAnimationFrame ||
 			window.oRequestAnimationFrame ||
-			window.msRequestAnimationFrame ||
+			window.msRequestAnimationFrame)) ||
 			function(callback) {
-				return window.setTimeout(callback, 1000 / 60);
+				return setTimeout(callback, 1000 / 60);
 			};
 	}());
 	// -- DOM methods
@@ -364,7 +359,7 @@ module.exports = function() {
 
 		var touches = e.touches;
 		if (touches && touches.length > 0) {
-			if(typeof(api) == 'object' && api.platform == 'mp' && touches[0].x){
+			if(typeof(wx) == 'object' && !!wx.createSelectorQuery && touches[0].x){
 				return {
 					x: touches[0].x,
 					y: touches[0].y
@@ -504,7 +499,7 @@ module.exports = function() {
 		return isNaN(ch) ? h : Math.min(h, ch);
 	};
 	helpers.getStyle = function(el, property) {
-		if(typeof(api) == 'object' && api.platform){
+		if(typeof(wx) == 'object' || typeof(api) == 'object' && api.platform){
 			return '0px';
 		}
 		return el.currentStyle ?
